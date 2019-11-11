@@ -4,10 +4,10 @@ package main.java.org.unipisa.pr2cheli;
 import java.util.ArrayList;
 import java.util.DuplicateFormatFlagsException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
-import main.java.org.unipisa.pr2cheli.Data;
-import main.java.org.unipisa.pr2cheli.DataBoard;
-import main.java.org.unipisa.pr2cheli.DataValidator;
+import main.java.org.unipisa.pr2cheli.*;
 
 /**
  * Board ADT
@@ -53,26 +53,69 @@ public class Board <E extends Data> implements DataBoard {
     /**
      * @param category The category name to create
      * @throws DuplicateDataException
+     * @throws InvalidDataException
      */
     @Override
     public void createCategory(String category, String passw) throws DuplicateDataException, InvalidDataException {
         DataValidator.validateCategory(category);
     }
 
-    /**
-     * UnauthorizedLoginException
-     */
-    public static class UnauthorizedLoginException extends Exception {
-        public UnauthorizedLoginException(String msg) {
-            super(msg);
-        }
+    @Override
+    public void removeCategory(String category, String passw) {
+        // TODO Auto-generated method stub
     }
-    /**
-     * DuplicateDataException
-     */
-    public static class DuplicateDataException extends Exception {
-        public DuplicateDataException(String msg) {
-            super(msg);
-        }
+
+    @Override
+    public void addFriend(String category, String passw, String friend) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void removeFriend(String category, String passw, String friend) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean put(String passw, Data dato, String category) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Data get(String passw, Data dato) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Data remove(String passw, Data dato) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List getDataCategory(String passw, String category) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void insertLike(String friend, Data dato) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Iterator getIterator(String passw) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Iterator getFriendIterator(String friend) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

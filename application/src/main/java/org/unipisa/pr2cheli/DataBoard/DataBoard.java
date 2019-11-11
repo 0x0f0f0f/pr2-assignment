@@ -12,7 +12,7 @@ import main.java.org.unipisa.pr2cheli.Data;
  */
 public interface DataBoard<E extends Data> {
     /* Crea una categoria di dati */
-    public void createCategory(String category, String passw);
+    public void createCategory(String category, String passw) throws DuplicateDataException, InvalidDataException;
 
     /* Rimuove una categoria di dati */
     public void removeCategory(String category, String passw);
@@ -36,7 +36,7 @@ public interface DataBoard<E extends Data> {
     public List<E> getDataCategory(String passw, String category);
 
     /* Aggiunge un like a un dato */
-    void insertLike(String friend, E dato);
+    public void insertLike(String friend, E dato);
 
     /* Restituisce un iteratore (senza remove) che genera tutti
     i dati in bacheca ordinati rispetto al numero di like */
