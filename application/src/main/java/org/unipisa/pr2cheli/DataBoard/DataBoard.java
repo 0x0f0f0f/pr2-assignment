@@ -20,17 +20,19 @@ public interface DataBoard<E extends Data> {
 
     /* Aggiunge un amico ad una categoria di dati */
     public void addFriend(String category, String passw, String friend)
-    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException, DuplicateDataException;
 
     /* Rimuove un amico da una categoria di dati */
     public void removeFriend(String category, String passw, String friend)
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Inserisce un dato in bacheca*/
-    public boolean put(String passw, E dato, String category);
+    public boolean put(String passw, E dato, String category)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException, DuplicateDataException;
 
     /* Restituisce una copia del dato in bacheca */
-    public E get(String passw, E dato);
+    public E get(String passw, E dato)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Rimuove e restituisce un dato dalla bacheca */
     public E remove(String passw, E dato);

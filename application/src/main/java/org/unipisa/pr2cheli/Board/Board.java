@@ -1,7 +1,8 @@
 
 package org.unipisa.pr2cheli;
 
-import java.util.ArrayList;
+import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.DuplicateFormatFlagsException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,11 +13,11 @@ import java.util.List;
 /**
  * Board ADT
  */
-public class Board <E extends Data> implements DataBoard {
-    private HashMap<String, ArrayList<E>> contents;
+public class Board <E extends Data> implements DataBoard<E> {
+    private HashMap<String, TreeSet<E>> contents;
+    private HashMap<String, HashSet<String>> friends;
     private String owner;
     private String passw;
-    private HashMap<String, ArrayList<String>> friends;
 
     /**
      * Constructor for Board
@@ -31,8 +32,8 @@ public class Board <E extends Data> implements DataBoard {
         DataValidator.validatePassw(passw);
         this.owner = owner;
         this.passw = passw;
-        this.friends = new HashMap<String, ArrayList<String>>();
-        this.contents = new HashMap<String, ArrayList<E>>();
+        this.contents = new HashMap<String, TreeSet<E>>();
+        this.friends = new HashMap<String, HashSet<String>>();
     }
 
     /**
@@ -68,8 +69,8 @@ public class Board <E extends Data> implements DataBoard {
     throws DuplicateDataException, InvalidDataException, UnauthorizedLoginException {
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
-        this.contents.put(category, new ArrayList<E>());
-        this.friends.put(category, new ArrayList<String>());
+        this.contents.put(category, new TreeSet<E>());
+        this.friends.put(category, new HashSet<String>());
     }
 
     /**
@@ -110,7 +111,7 @@ public class Board <E extends Data> implements DataBoard {
         DataValidator.validateUser(friend);
         this.checkPasswd(passw);
         if(!this.friends.containsKey(category)) throw new DataNotFoundException(category);
-        ArrayList<String> frs = this.friends.get(category);
+        HashSet<String> frs = this.friends.get(category);
         // this should not happen
         if(frs == null) throw new NullPointerException();
         if(frs.contains(friend)) throw new DuplicateDataException(friend);
@@ -135,7 +136,7 @@ public class Board <E extends Data> implements DataBoard {
         DataValidator.validateUser(friend);
         this.checkPasswd(passw);
         if(!this.friends.containsKey(category)) throw new DataNotFoundException(category);
-        ArrayList<String> frs = this.friends.get(category);
+        HashSet<String> frs = this.friends.get(category);
         // this should not happen
         if(frs == null) throw new NullPointerException();
         if(!frs.contains(friend)) throw new DataNotFoundException(friend);
@@ -144,7 +145,7 @@ public class Board <E extends Data> implements DataBoard {
 
     /**
      * Add a post to a category.
-     * modifies this.friends
+     * modifies this.contents
      * @param category The category name to create, must be a valid category name
      * @param dato The element to add to the category posts
      * @param passw The password, must be a matching and valid password
@@ -155,21 +156,38 @@ public class Board <E extends Data> implements DataBoard {
      * @see org.unipisa.pr2cheli.DataValidator
      */
     @Override
-    public boolean put(String passw, E dato, String category) {
+    public boolean put(String passw, E dato, String category)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException, DuplicateDataException {
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
         if(!this.contents.containsKey(category)) throw new DataNotFoundException(category);
-        ArrayList<String> cts = this.friends.get(category);
+        TreeSet<E> cts = this.contents.get(category);
         // this should not happen
         if(cts == null) throw new NullPointerException();
-        if(cts.contains(friend)) throw new DuplicateDataException(friend);
-        frs.add(friend);
+        if(cts.contains(dato)) throw new DuplicateDataException("dato");
+        cts.add(dato);
+        return true;
     }
 
+    /**
+     * Get a post. (???)
+     * @param dato The element to get from the category posts
+     * @param passw The password, must be a matching and valid password
+     * @throws DataNotFoundException if category does not exists
+     * @throws InvalidDataException if passwd is invalid
+     * @throws UnauthorizedLoginException if there is a password mismatch
+     * @see org.unipisa.pr2cheli.DataValidator
+     */
     @Override
-    public Data get(String passw, Data dato) {
-        // TODO Auto-generated method stub
-        return null;
+    public E get(String passw, E dato)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException {
+        this.checkPasswd(passw);
+        E x = null;
+        for(TreeSet<E> t : this.contents.values()) {
+            if(t.contains(dato)) x = dato;
+        }
+        if(x == null) throw new DataNotFoundException("");
+        return x;
     }
 
     @Override

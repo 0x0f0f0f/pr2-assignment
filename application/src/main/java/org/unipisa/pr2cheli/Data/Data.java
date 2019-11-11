@@ -20,7 +20,7 @@ import java.util.ArrayList;
     && numlikes = likes.length()
    if it is valid after allocation, where validation is made.
  */
-public class Data {
+public class Data implements Comparable<Data> {
     private String author;
     private String text;
     private int numlikes;
@@ -38,7 +38,7 @@ public class Data {
         this.author = author;
         this.text = text;
         this.numlikes = 0;
-        this.likes = new ArrayList<String> likes;
+        this.likes = new ArrayList<String>();
     }
 
     /**
@@ -53,6 +53,13 @@ public class Data {
      */
     public String getText() {
         return text;
+    }
+
+    /**
+     * @return the number of likes
+     */
+    public int getNumlikes() {
+        return numlikes;
     }
 
     /**
@@ -76,7 +83,7 @@ public class Data {
      * @throws DuplicateDataException if who already exists in likes
      */
     public void addLike(String who)
-    throws InvalidDataException, DataNotFoundException {
+    throws InvalidDataException, DataNotFoundException, DuplicateDataException {
         DataValidator.validateUser(who);
         if(this.likes.contains(who)) throw new DuplicateDataException(who);
         this.numlikes++;
@@ -95,5 +102,10 @@ public class Data {
         if(!this.likes.contains(who)) throw new DataNotFoundException(who);
         this.numlikes--;
         this.likes.remove(who);
+    }
+
+    // To implement comparable
+    public int compareTo(Data o) {
+        return this.numlikes - o.getNumlikes();
     }
 }
