@@ -1,7 +1,5 @@
 package org.unipisa.pr2cheli;
 
-import main.java.org.unipisa.pr2cheli.Data;
-
 /*
  * Main
  */

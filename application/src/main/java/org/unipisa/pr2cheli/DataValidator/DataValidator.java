@@ -1,4 +1,4 @@
-package main.java.org.unipisa.pr2cheli;
+package org.unipisa.pr2cheli;
 import java.util.regex.*;
 
 
@@ -7,17 +7,17 @@ import java.util.regex.*;
  */
 public class DataValidator {
     /**
-     * Validator method to check if the author is an alphanumeric value no longer than 50 characters
+     * Validator method to check if the user is an alphanumeric value no longer than 50 characters
      * And beginning with a word or digit
-     * @param author A string containing the author
+     * @param user A string containing the user
      * @throws InvalidDataException
      */
-    public static void validateAuthor(String author) throws InvalidDataException {
-        if(author == null) throw new NullPointerException();
-        if(author.length() == 0) throw new InvalidDataException("Author field is empty");
-        if(author.length() > 50) throw new InvalidDataException("Author field is greater than 128 chars");
+    public static void validateUser(String user) throws InvalidDataException {
+        if(user == null) throw new NullPointerException();
+        if(user.length() == 0) throw new InvalidDataException("Author field is empty");
+        if(user.length() > 50) throw new InvalidDataException("Author field is greater than 128 chars");
         /* Check alphanumeric regex */
-        if(! Pattern.compile("[\\w\\d]+[\\w\\d-_]*").matcher(author).matches())
+        if(! Pattern.compile("[\\w\\d]+[\\w\\d-_]*").matcher(user).matches())
             throw new InvalidDataException("Invalid Author field");
     }
 

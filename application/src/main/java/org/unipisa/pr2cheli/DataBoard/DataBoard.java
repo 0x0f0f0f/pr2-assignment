@@ -1,9 +1,8 @@
-package main.java.org.unipisa.pr2cheli;
+package org.unipisa.pr2cheli;
 
 import java.util.Iterator;
 import java.util.List;
 
-import main.java.org.unipisa.pr2cheli.Data;
 
 /**
  * DataBoard
@@ -12,16 +11,20 @@ import main.java.org.unipisa.pr2cheli.Data;
  */
 public interface DataBoard<E extends Data> {
     /* Crea una categoria di dati */
-    public void createCategory(String category, String passw) throws DuplicateDataException, InvalidDataException;
+    public void createCategory(String category, String passw)
+    throws DuplicateDataException, InvalidDataException, UnauthorizedLoginException;
 
     /* Rimuove una categoria di dati */
-    public void removeCategory(String category, String passw);
+    public void removeCategory(String category, String passw)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Aggiunge un amico ad una categoria di dati */
-    public void addFriend(String category, String passw, String friend);
+    public void addFriend(String category, String passw, String friend)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Rimuove un amico da una categoria di dati */
-    public void removeFriend(String category, String passw, String friend);
+    public void removeFriend(String category, String passw, String friend)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Inserisce un dato in bacheca*/
     public boolean put(String passw, E dato, String category);
