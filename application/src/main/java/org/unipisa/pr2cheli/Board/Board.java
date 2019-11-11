@@ -1,7 +1,12 @@
+
+package main.java.org.unipisa.pr2cheli;
+
 import java.util.ArrayList;
 import java.util.DuplicateFormatFlagsException;
 import java.util.HashMap;
 
+import main.java.org.unipisa.pr2cheli.Data;
+import main.java.org.unipisa.pr2cheli.DataBoard;
 import main.java.org.unipisa.pr2cheli.DataValidator;
 
 /**
@@ -13,7 +18,12 @@ public class Board <E extends Data> implements DataBoard {
     private String passw;
     private HashMap<String, ArrayList<String>> friends;
 
-    public Board(String owner, String passw) {
+    /**
+     * @param owner
+     * @param passw
+     * @throws InvalidDataException
+     */
+    public Board(String owner, String passw) throws InvalidDataException {
         DataValidator.validateAuthor(owner);
         DataValidator.validatePassw(passw);
         this.owner = owner;
@@ -33,8 +43,9 @@ public class Board <E extends Data> implements DataBoard {
      * Checks if the password is correct
      * @param p the password to check
      * @throws UnauthorizedLoginException
+     * @throws InvalidDataException
     */
-    public void checkPasswd(String p) {
+    public void checkPasswd(String p) throws UnauthorizedLoginException, InvalidDataException {
         DataValidator.validatePassw(p);
         if(!this.passw.equals(p)) throw new UnauthorizedLoginException("Wrong Credentials");
     }
@@ -44,14 +55,14 @@ public class Board <E extends Data> implements DataBoard {
      * @throws DuplicateDataException
      */
     @Override
-    public void createCategory(String category, String passw) {
+    public void createCategory(String category, String passw) throws DuplicateDataException, InvalidDataException {
         DataValidator.validateCategory(category);
     }
 
     /**
      * UnauthorizedLoginException
      */
-    public class UnauthorizedLoginException extends Exception {
+    public static class UnauthorizedLoginException extends Exception {
         public UnauthorizedLoginException(String msg) {
             super(msg);
         }
@@ -59,7 +70,7 @@ public class Board <E extends Data> implements DataBoard {
     /**
      * DuplicateDataException
      */
-    public class DuplicateDataException extends Exception {
+    public static class DuplicateDataException extends Exception {
         public DuplicateDataException(String msg) {
             super(msg);
         }

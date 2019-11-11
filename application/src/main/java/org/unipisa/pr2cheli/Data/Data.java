@@ -1,4 +1,5 @@
-import java.util.regex.*;
+package main.java.org.unipisa.pr2cheli;
+import java.util.ArrayList;
 
 /**
  * Overview for the Data ADT
@@ -18,10 +19,11 @@ import java.util.regex.*;
  * This data type is immutable therefore the representation invariant is always valid
  * if it is valid after allocation, where validation is made.
  */
-class Data {
+public class Data {
     private String author;
     private String text;
     private int likes;
+    private ArrayList<String> friendsliked;
 
     /**
      * @param author
