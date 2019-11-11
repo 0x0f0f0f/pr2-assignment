@@ -1,0 +1,87 @@
+%Carattere dimensione 12
+\documentclass[12pt]{report}
+
+%Margini e interlinea
+\usepackage[top=1in, bottom=1in, left=1.2in, right=1in]{geometry}
+\pagestyle{plain}
+\linespread{1.5}
+
+%Librerie utili
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{floatflt}
+\usepackage{blindtext}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{subfig}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{amsmath}
+\usepackage{framed}
+\usepackage{minibox}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{longtable}
+\usepackage[strict]{changepage}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\pgfplotsset{width=11cm,compat=1.9}
+\usepgfplotslibrary{external}
+\tikzexternalize
+
+\begin{document}
+
+\begin{titlepage}
+\begin{figure}[t]
+	\centering\includegraphics[width=0.9\textwidth]{scritta}
+    \centering\includegraphics[width=0.4\textwidth]{logo}
+\end{figure}
+
+\begin{center}
+	\textbf{ Dipartimento di Informatica\\ Corso di Laurea in Informatica\\}
+	\vspace{15mm}
+    {\LARGE{\bf Primo Progetto midterm per il corso di Programmazione 2.}}\\
+	\vspace{3mm}
+	{\LARGE{\bf A cura di Alessandro Cheli}}\\
+\end{center}
+
+\vspace{18mm}
+
+\begin{minipage}[t]{0.47\textwidth}
+	{\large{\bf Insegnanti:\\ Prof. Gianluigi Ferrari\\ Prof.ssa Francesca Levi}}
+\end{minipage}\hfill\begin{minipage}[t]{0.47\textwidth}\raggedleft
+	{\large{\bf Studente: \\Alessandro Cheli \\ 583350 Corso A\\ }}
+\end{minipage}
+
+\vspace{18mm}
+
+\centering{\large{\bf Sessione autunnale\\ Anno Accademico 20190/2020 }}
+
+\end{titlepage}
+
+\tableofcontents
+
+\begin{abstract}
+Relazione sul primo progetto midterm per il corso di Programmazione 2.
+\end{abstract}
+
+\chapter{Introduzione e Istruzioni per l'esecuzione}
+
+Il progetto è stato realizzato utilizzando \textbf{Apache Maven} come strumento di build e gestione delle dipendenze.
+Dopo aver installato JDK di versione uguale o superiore alla 8 e la dipendenza Java Maven
+si può compilare ed eseguire il progetto eseguendo.
+\begin{lstlisting}
+mvn compile
+mvn package
+java -jar target/application-1.0-SNAPSHOT.jar
+\end{lstlisting}
+
+
+\appendix
+
+%\bibliography{references}
+%\bibliographystyle{plain}
+
+\end{document}
