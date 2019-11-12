@@ -49,9 +49,11 @@ public interface DataBoard<E extends DataElement> {
 
     /* Restituisce un iteratore (senza remove) che genera tutti
     i dati in bacheca ordinati rispetto al numero di like */
-    public Iterator<E> getIterator(String passw);
+    public Iterator<E> getIterator(String passw)
+    throws UnauthorizedLoginException, InvalidDataException;
 
     /* Restituisce un iteratore (senza remove) che genera tutti i dati
     in bacheca condivisi */
-    public Iterator<E> getFriendIterator(String friend);
+    public Iterator<E> getFriendIterator(String friend)
+    throws InvalidDataException;
 }

@@ -5,8 +5,10 @@ import java.util.TreeSet;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.unipisa.pr2cheli.Exceptions.*;
 
@@ -261,26 +263,65 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DuplicateDataException, InvalidDataException, DataNotFoundException {
         if(dato == null) throw new NullPointerException();
         E x = null;
-        for(TreeSet<E> t : this.contents.values()) {
-            if(t.contains(dato)) {
-                t.remove(dato);
-                x = dato;
-                dato.addLike(friend);
-                t.add(dato);
+        for(String category : this.contents.keySet()) {
+            TreeSet<E> t = this.contents.get(category);
+            if(this.friends.get(category) == null) throw new NullPointerException("friends list in " + category);
+            if(this.friends.get(category).contains(friend)) {
+                if(t.contains(dato)) {
+                    t.remove(dato);
+                    x = dato;
+                    dato.addLike(friend);
+                    t.add(dato);
+                }
             }
         }
-        if(x == null) throw new DataNotFoundException(dato.display());
+        if(x == null) throw new DataNotFoundException("post not found or @" + friend + " is not authorized to view it");
     }
 
+    /**
+     * Get an iterator for all posts sorted by like number.
+     * @param passw The board password, must be a valid and matching password
+     * @throws NullPointerException if data is corrupted
+     * @throws InvalidDataException if password is invalid or data contents are invalid
+     * @throws UnauthorizedLoginException if there is a password mismatch
+     * @see org.unipisa.pr2cheli.DataValidator
+     */
     @Override
-    public Iterator getIterator(String passw) {
-        // TODO Auto-generated method stub
-        return null;
+    public Iterator getIterator(String passw)
+    throws UnauthorizedLoginException, InvalidDataException {
+        this.checkPasswd(passw);
+        TreeSet <E> all = new TreeSet<E>();
+        for(TreeSet<E> t : this.contents.values()) {
+            for(E e : t) {
+                all.add(e);
+            }
+        }
+
+        SortedSet<E> unmodifiableAll = Collections.unmodifiableSortedSet(all);
+        return unmodifiableAll.iterator();
     }
 
+    /**
+     * Get an iterator for all posts accessible by a friend.
+     * @param friend The friend, must be a  valid and matching username
+     * @throws NullPointerException if data is corrupted
+     * @throws InvalidDataException if password is invalid or data contents are invalid
+     * @see org.unipisa.pr2cheli.DataValidator
+     */
     @Override
-    public Iterator getFriendIterator(String friend) {
-        // TODO Auto-generated method stub
-        return null;
+    public Iterator getFriendIterator(String friend)
+    throws InvalidDataException {
+        DataValidator.validateUser(friend);
+        ArrayList <E> all = new ArrayList<E>();
+        for(String cat : this.contents.keySet()) {
+            if(this.friends.get(cat).contains(friend)) {
+                for(E e : this.contents.get(cat)) {
+                    all.add(e);
+                }
+            }
+        }
+
+        List<E> unmodifiableAll = Collections.unmodifiableList(all);
+        return unmodifiableAll.iterator();
     }
 }

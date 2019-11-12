@@ -24,6 +24,8 @@ public class App {
             Board<DataElement> board_chiara =  new Board<DataElement>("chiara",    PW_CHIARA);
             Board<DataElement> board_sara =    new Board<DataElement>("sara",      PW_SARA);
             DataElement temp_element;
+            DataElement element_tolike;
+            DataElement element_tolike_notauthorized;
 
             /* ===========================
                 TEST BOARDS
@@ -96,20 +98,19 @@ public class App {
             } catch (Exception e) {
                 System.err.println(e);
             }
-            /* ===================================================
-                TEST FRIENDS
-               ================================================= */
-
-            //TODO test friends
 
             /* ===================================================
                 TEST POSTS
                ================================================= */
             System.out.println("\n===> Aggiungo post alla bacheca di ale");
             temp_element = new DataElement("ale", "hello world");
+            // Utilizzato nel test dei like
+            element_tolike = temp_element;
             System.out.println(temp_element.display());
             board_ale.put(PW_ALE, temp_element, "main");
             temp_element = new DataElement("ale", "hello gatto");
+            // Utilizzato nel test dei like
+            element_tolike_notauthorized = temp_element;
             System.out.println(temp_element.display());
             board_ale.put(PW_ALE, temp_element, "gatti");
             temp_element = new DataElement("ale", "hello cane");
@@ -180,11 +181,62 @@ public class App {
             }
 
             /* ===================================================
+                TEST FRIENDS
+               ================================================= */
+
+            System.out.println("\n===> Aggiungo amici alla bacheca di ale");
+            board_ale.addFriend("main", PW_ALE, "giorgio");
+            board_ale.addFriend("main", PW_ALE, "sara");
+            board_ale.addFriend("main", PW_ALE, "chiara");
+            board_ale.removeFriend("main", PW_ALE, "chiara");
+
+            try {
+                System.out.println("\n===> Rimuovo un amico non esistente dalla categoria. Mi aspetto DataNotFoundException");
+                board_ale.removeFriend("main", PW_ALE, "chiara");
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+
+            try {
+                System.out.println("\n===> Aggiungo un amico ad una categoria non esistente. Mi aspetto DataNotFoundException");
+                board_ale.addFriend("nonesisto", PW_ALE, "giorgio");
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+
+            try {
+                System.out.println("\n===> Aggiungo un amico duplicato alla categoria. Mi aspetto DuplicateDataException");
+                board_ale.addFriend("main", PW_ALE, "giorgio");
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+
+            /* ===================================================
                 TEST LIKES
                ================================================= */
 
-            //TODO test likes
-            
+            System.out.println("\n===> Aggiungo like a post nella bacheca \"main\" di ale");
+            System.out.println("Il post a cui metto like è\n" + element_tolike.display());
+            board_ale.insertLike("giorgio", element_tolike);
+            board_ale.insertLike("sara", element_tolike);
+
+            try {
+                System.out.println("\n===> Aggiungo un like duplicato al post. Mi aspetto DuplicateDataException");
+                board_ale.insertLike("giorgio", element_tolike);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+
+            try {
+                System.out.println("\n===> Aggiungo un like da un utente non presente negli amici della categoria. Mi aspetto DataNotFoundException");
+                board_ale.insertLike("chiara", element_tolike);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+
+            /* ===================================================
+                TEST ITERATORS
+               ================================================= */
         } catch (Exception e) {
             System.err.println("FATAL ERROR - THIS SHOULD NOT HAVE HAPPENED:\n" + e);
         }
