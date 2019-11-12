@@ -1,6 +1,7 @@
 package org.unipisa.pr2cheli;
 import java.util.regex.*;
 
+import org.unipisa.pr2cheli.Exceptions.*;
 
 /**
  * DataValidator
@@ -14,11 +15,11 @@ public class DataValidator {
      */
     public static void validateUser(String user) throws InvalidDataException {
         if(user == null) throw new NullPointerException();
-        if(user.length() == 0) throw new InvalidDataException("Author field is empty");
-        if(user.length() > 50) throw new InvalidDataException("Author field is greater than 128 chars");
+        if(user.length() == 0) throw new InvalidDataException("Username field is empty");
+        if(user.length() > 50) throw new InvalidDataException("Username field is greater than 128 chars");
         /* Check alphanumeric regex */
         if(! Pattern.compile("[\\w\\d]+[\\w\\d-_]*").matcher(user).matches())
-            throw new InvalidDataException("Invalid Author field");
+            throw new InvalidDataException("Invalid Username field");
     }
 
     /**

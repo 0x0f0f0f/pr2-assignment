@@ -3,13 +3,14 @@ package org.unipisa.pr2cheli;
 import java.util.Iterator;
 import java.util.List;
 
+import org.unipisa.pr2cheli.Exceptions.*;
 
 /**
  * DataBoard
  * I metodi che contengono il campo passw
  * vengono eseguiti se si rispettano i controlli di identità
  */
-public interface DataBoard<E extends Data> {
+public interface DataBoard<E extends DataElement> {
     /* Crea una categoria di dati */
     public void createCategory(String category, String passw)
     throws DuplicateDataException, InvalidDataException, UnauthorizedLoginException;
@@ -35,13 +36,16 @@ public interface DataBoard<E extends Data> {
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Rimuove e restituisce un dato dalla bacheca */
-    public E remove(String passw, E dato);
+    public E remove(String passw, E dato)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Crea la lista dei dati in bacheca di una determinata categoria */
-    public List<E> getDataCategory(String passw, String category);
+    public List<E> getDataCategory(String passw, String category)
+    throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException;
 
     /* Aggiunge un like a un dato */
-    public void insertLike(String friend, E dato);
+    public void insertLike(String friend, E dato)
+    throws DuplicateDataException, InvalidDataException, DataNotFoundException ;
 
     /* Restituisce un iteratore (senza remove) che genera tutti
     i dati in bacheca ordinati rispetto al numero di like */

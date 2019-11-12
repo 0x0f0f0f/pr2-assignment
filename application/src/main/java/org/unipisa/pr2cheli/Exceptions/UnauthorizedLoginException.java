@@ -1,4 +1,4 @@
-package org.unipisa.pr2cheli;
+package org.unipisa.pr2cheli.Exceptions;
 
 /**
  * UnauthorizedLoginException
