@@ -176,7 +176,7 @@ public class Board <E extends DataElement> implements DataBoard<E> {
         E cloned = (E)dato.clone();
         cloned.setCategory(category);
         if(cts.contains(cloned)) throw new DuplicateDataException(cloned.display() + " in category " + category);
-        cts.add(dato);
+        cts.add(cloned);
         return true;
     }
 
@@ -269,9 +269,10 @@ public class Board <E extends DataElement> implements DataBoard<E> {
             if(this.friends.get(category).contains(friend)) {
                 if(t.contains(dato)) {
                     t.remove(dato);
-                    x = dato;
-                    dato.addLike(friend);
-                    t.add(dato);
+                    x = (E) dato.clone();
+                    x.addLike(friend);
+                    System.out.println("Just added like to " + x.display());
+                    t.add(x);
                 }
             }
         }
@@ -287,7 +288,7 @@ public class Board <E extends DataElement> implements DataBoard<E> {
      * @see org.unipisa.pr2cheli.DataValidator
      */
     @Override
-    public Iterator getIterator(String passw)
+    public Iterator<E> getIterator(String passw)
     throws UnauthorizedLoginException, InvalidDataException {
         this.checkPasswd(passw);
         TreeSet <E> all = new TreeSet<E>();
@@ -309,7 +310,7 @@ public class Board <E extends DataElement> implements DataBoard<E> {
      * @see org.unipisa.pr2cheli.DataValidator
      */
     @Override
-    public Iterator getFriendIterator(String friend)
+    public Iterator<E> getFriendIterator(String friend)
     throws InvalidDataException {
         DataValidator.validateUser(friend);
         ArrayList <E> all = new ArrayList<E>();

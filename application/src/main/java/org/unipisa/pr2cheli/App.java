@@ -1,5 +1,7 @@
 package org.unipisa.pr2cheli;
 
+import java.util.Iterator;
+
 /*
  * Main
  */
@@ -25,7 +27,7 @@ public class App {
             Board<DataElement> board_sara =    new Board<DataElement>("sara",      PW_SARA);
             DataElement temp_element;
             DataElement element_tolike;
-            DataElement element_tolike_notauthorized;
+            DataElement element_tolike2;
 
             /* ===========================
                 TEST BOARDS
@@ -108,9 +110,8 @@ public class App {
             element_tolike = temp_element;
             System.out.println(temp_element.display());
             board_ale.put(PW_ALE, temp_element, "main");
+            element_tolike.setCategory("main");
             temp_element = new DataElement("ale", "hello gatto");
-            // Utilizzato nel test dei like
-            element_tolike_notauthorized = temp_element;
             System.out.println(temp_element.display());
             board_ale.put(PW_ALE, temp_element, "gatti");
             temp_element = new DataElement("ale", "hello cane");
@@ -163,6 +164,10 @@ public class App {
             } catch (Exception e) {
                 System.err.println(e);
             }
+
+            element_tolike2 = temp_element;
+            element_tolike2.setCategory("main");
+
             try {
                 System.out.println("\n===> Recupero un post non esistente dalla board. Mi aspetto DataNotFoundException");
                 temp_element = new DataElement("ale", "nonesistoperniente");
@@ -218,7 +223,9 @@ public class App {
             System.out.println("\n===> Aggiungo like a post nella bacheca \"main\" di ale");
             System.out.println("Il post a cui metto like è\n" + element_tolike.display());
             board_ale.insertLike("giorgio", element_tolike);
+            element_tolike.addLike("giorgio");
             board_ale.insertLike("sara", element_tolike);
+            board_ale.insertLike("giorgio", element_tolike2);
 
             try {
                 System.out.println("\n===> Aggiungo un like duplicato al post. Mi aspetto DuplicateDataException");
@@ -237,6 +244,28 @@ public class App {
             /* ===================================================
                 TEST ITERATORS
                ================================================= */
+
+            System.out.println("\n===> Test dell'iteratore della bacheca di ale");
+            Iterator<DataElement> itr = board_ale.getIterator(PW_ALE);
+            while(itr.hasNext()) {
+                DataElement el = itr.next();
+                System.out.println(el.display());
+            }
+
+            System.out.println("\n===> Test dell'iteratore friends della bacheca di ale");
+            itr = board_ale.getFriendIterator("giorgio");
+            while(itr.hasNext()) {
+                DataElement el = itr.next();
+                System.out.println(el.display());
+            }
+
+            System.out.println("\n===> Test dell'iteratore friends di un amico non presente negli amici della bacheca di ale\nUn risultato vuoto è corretto");
+            itr = board_ale.getFriendIterator("chiara");
+            while(itr.hasNext()) {
+                DataElement el = itr.next();
+                System.out.println(el.display());
+            }
+
         } catch (Exception e) {
             System.err.println("FATAL ERROR - THIS SHOULD NOT HAVE HAPPENED:\n" + e);
         }

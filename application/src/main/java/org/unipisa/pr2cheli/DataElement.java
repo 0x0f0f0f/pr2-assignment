@@ -112,8 +112,9 @@ public class DataElement implements Comparable<DataElement> {
      */
     public String toString() {
         if(this.getCategory() == null)
-            return "@" + this.getAuthor() + " says: " + this.getText();
-        return "@" + this.getAuthor() + " says in category " + this.getCategory() + ": " + this.getText();
+            return "@" + this.getAuthor() + " says (liked by " + this.getNumlikes() + " people)\n" + this.getText();
+        return "@" + this.getAuthor() + " says in category " + this.getCategory()
+            + " (liked by " + this.getNumlikes() + " people)\n" + this.getText();
     }
 
     /**
@@ -155,6 +156,6 @@ public class DataElement implements Comparable<DataElement> {
                 return this.text.compareTo(o.getText());
             }
         }
-        return this.numlikes - o.getNumlikes();
+        return o.getNumlikes() - this.numlikes;
     }
 }
