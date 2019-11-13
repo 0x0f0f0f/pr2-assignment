@@ -31,6 +31,22 @@
 \usepgfplotslibrary{external}
 \tikzexternalize
 
+
+% Code Listings
+\definecolor{vgreen}{RGB}{104,180,104}
+\definecolor{vblue}{RGB}{49,49,255}
+\definecolor{vorange}{RGB}{255,143,102}
+\lstdefinestyle{bash} {
+	language=bash,
+	basicstyle=\ttfamily,
+	keywordstyle=\color{vblue},
+	identifierstyle=\color{black},
+	commentstyle=\color{vgreen},
+	tabsize=4,
+%	moredelim=*[s][\colorIndex]{[}{]},
+	literate=*{:}{:}1
+}
+
 \begin{document}
 
 \begin{titlepage}
@@ -61,23 +77,78 @@
 
 \end{titlepage}
 
-\tableofcontents
+\chapter{Relazione del Progetto}
 
-\chapter{Dettagli e Istruzioni per l'Esecuzione}
+\section{Istruzioni}
 
 Il progetto è stato realizzato utilizzando \textbf{Apache Maven} come strumento di build e gestione delle dipendenze.
-Alcune clausole sono specificate con la sintassi Javadoc
+Alcune clausole sono specificate con la sintassi \textbf{Javadoc}
 (i parametri sono documentati con la clausola \textit{@params} invece che con la clausola \textit{@requires}).
 Dopo aver installato JDK di versione uguale o superiore alla 8 e la dipendenza Apache Maven
 si può compilare ed eseguire il progetto eseguendo.
-\begin{lstlisting}
+\begin{lstlisting}[style=bash]
 mvn compile
 mvn package
 java -jar target/application-1.0-SNAPSHOT.jar
 \end{lstlisting}
 
-\section{Supposizioni}
+In alternativa si può compilare il progetto utilizzando javac ma non verranno spiegati nella relazione i dettagli.
+Apache Maven scaricherà e compilerà automaticamente le dipendenze necessarie (per generare Javadoc e creare un archivio \verb|.jar| corretto).
+Non vengono utilizzate librerie esterne a \verb|java.util|.
 
+Per visualizzare la documentazione \textbf{Javadoc} si può eseguire, dopo la compilazione
+\begin{lstlisting}[style=bash]
+# entro nella directory dove risiedono i file compilati
+cd application/target
+# creo una cartella dove estrarre i file html
+mkdir javadoc
+# estraggo il contenuto dell'archivio jar dove
+# sono contenuti i Javadoc
+unzip application-1.0-SNAPSHOT-javadoc.jar -d javadoc/
+# eseguire un server http all'interno della
+# directory contenente i file html
+# ad esempio darkhttpd
+darkhttpd javadoc/
+darkhttpd/1.12, copyright (c) 2003-2016 Emil Mikulic.
+listening on: http://0.0.0.0:8080/
+# aprire un browser all'indirizzo localhost:8080
+\end{lstlisting}
+
+\section{Dettagli di Implementazione}
+La classe \verb|Board<E extends DataElement>| implementa l'interfaccia \\
+\verb|DataBoard<E extends DataElement>|
+mantenendo i contenuti (post) all'interno di una tabella hash \verb|private HashMap<String, TreeSet<E>> contents;|.
+Dove la chiave è la categoria e il contenuto è un insieme di post ordinato per numero di like e lessicograficamente.
+(Si veda \verb|DataElement.compareTo| per l'ordinamento dei post). Gli amici vengono
+contenuti in una tabella hash \verb|private HashMap<String, HashSet<String>> friends;|
+Dove la chiave è la categoria e i valori sono gli insiemi di amici che possono visualizzare tale categoria.
+
+La seconda implementazione \verb|Board2<E extends DataElement>| utilizza una classe
+\verb|Category<E extends DataElement>| che contiene, oltre al nome
+della categoria, un \verb|TreeSet<E>| per mantenere i post ordinati e
+un \verb|HashSet<String>| per mantenere i nomi degli amici che possono visualizzare la categoria.
+Nella classe \verb|Board2| si usa una \verb|ArrayList<Category>| per mantenere la lista delle categorie e si effettua il
+controllo dell'unicità a mano sul campo \verb|c.category| $\forall$ \verb|Category c| tale che \verb|c| è contenunta all'interno
+della board.
+
+Entrambe le implementazioni effettuano rigorosi controlli sull'unicità, clonazione e correttezza dei valori dove tali attributi sono richiesti.
+In un'applicazione reale si utilizzerebbe, oltre che ad un database \textit{SQL} per la permanenza dei dati serializzati, anche dei
+metodi di crittografia come \textit{BCRYPT+Salt} per la gestione delle password e dei contenuti, ed un server che espone endpoint di una \textit{API HTTP}.
+Per semplicità, il progetto non richiede nessuna di tali funzionalità e l'implementazione e la batteria di test non gestiscono crittografia o permanenza dei dati.
+
+\section{Dettagli sulla batteria di test}
+La batteria di test è realizzata per semplicità \textbf{a mano} nel metodo main
+e non con \textbf{Junit}. Viene controllata la correttezza delle eccezioni lanciate all'interno
+di \textit{worst case} appositi dove si intende ottenere tali eccezioni, e vengono eseguite operazioni comuni
+su tutti i metodi di entrambe le classi \verb|Board| e \verb|Board2|. Nel caso le operazioni
+di \textit{normal usage} lancino un eccezione non aspettata viene terminata l'esecuzione del programma di test con un messaggio
+di \textit{FATAL ERROR}. Se un eccezione lanciata in un \textit{worst case}
+non rispetta il tipo di eccezione che si aspettava viene riportato un messaggio \textit{FAIL}, altrimenti un messaggio \textit{PASS}. Per controllare che l'esecuzione del main di test non contenga messaggi \textit{FAIL} o \textit{FATAL} si può eseguire
+
+\begin{lstlisting}[style=bash]
+java -jar application/target/application-1.0-SNAPSHOT.jar 2>&1 \
+	| grep -F -e FAIL -e FATAL
+\end{lstlisting}
 
 \appendix
 

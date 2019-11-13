@@ -3,7 +3,6 @@ package org.unipisa.pr2cheli;
 
 import java.util.TreeSet;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -15,15 +14,12 @@ import org.unipisa.pr2cheli.Exceptions.*;
 //import org.unipisa.pr2cheli.*;
 
 /**
- * Board ADT.
+ * Board2 ADT.
  * Abstract invariant: Owner and passwd exist and are valid usernames and passwords,
- * contents and friends MUST not be null and MUST contain the same keys or be empty. The values of contents are sorted by likes and valid posts.
- * Each value in contents contains the category in which it resides.
- * The values or friends are empty or contain only valid usernames.
+ * categories is not null and contains valid categories which in turn contain valid posts.
  */
-public class Board <E extends DataElement> implements DataBoard<E> {
-    private HashMap<String, TreeSet<E>> contents;
-    private HashMap<String, HashSet<String>> friends;
+public class Board2 <E extends DataElement> implements DataBoard<E> {
+    private ArrayList<Category<E>> categories;
     private String owner;
     private String passw;
 
@@ -35,13 +31,12 @@ public class Board <E extends DataElement> implements DataBoard<E> {
      * @see org.unipisa.pr2cheli.DataValidator
      * @see org.unipisa.pr2cheli.DataValidator
      */
-    public Board(String owner, String passw) throws InvalidDataException {
+    public Board2(String owner, String passw) throws InvalidDataException {
         DataValidator.validateUser(owner);
         DataValidator.validatePassw(passw);
         this.owner = owner;
         this.passw = passw;
-        this.contents = new HashMap<String, TreeSet<E>>();
-        this.friends = new HashMap<String, HashSet<String>>();
+        this.categories = new ArrayList<Category<E>>();
     }
 
     /**
@@ -77,10 +72,11 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DuplicateDataException, InvalidDataException, UnauthorizedLoginException {
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
-        if(this.contents.containsKey(category)) throw new DuplicateDataException(category);
-        if(this.friends.containsKey(category)) throw new DuplicateDataException(category);
-        this.contents.put(category, new TreeSet<E>());
-        this.friends.put(category, new HashSet<String>());
+        for(Category<E> c : this.categories) {
+            if(c.getCategory().equals(category)) throw new DuplicateDataException(category);
+        }
+        Category<E> newCat = new Category<E>(category);
+        this.categories.add(newCat);
     }
 
     /**
@@ -98,8 +94,14 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException {
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
-        if(this.contents.remove(category) == null) throw new DataNotFoundException("category: " + category);
-        if(this.friends.remove(category) == null) throw new DataNotFoundException("category: " + category);
+        Category<E> toRemove = null;
+        for(Category<E> c : this.categories) {
+            if(c.getCategory().equals(category)) {
+                toRemove = c;
+            }
+        }
+        if(toRemove == null) throw new DataNotFoundException("category: " + category);
+        this.categories.remove(toRemove);
     }
 
     /**
@@ -120,12 +122,24 @@ public class Board <E extends DataElement> implements DataBoard<E> {
         DataValidator.validateCategory(category);
         DataValidator.validateUser(friend);
         this.checkPasswd(passw);
-        if(!this.friends.containsKey(category)) throw new DataNotFoundException("category: " + category);
-        HashSet<String> frs = this.friends.get(category);
+        Category<E> toAdd = null;
+        for(Category<E> c : this.categories) {
+            if(c.getCategory().equals(category)) {
+                toAdd = c;
+            }
+        }
+        if(toAdd == null) throw new DataNotFoundException("category: " + category);
+        this.categories.remove(toAdd);
+        HashSet<String> frs = toAdd.getFriends();
         // this should not happen
         if(frs == null) throw new NullPointerException();
-        if(frs.contains(friend)) throw new DuplicateDataException("friend: " + friend);
+        if(frs.contains(friend)) {
+            this.categories.add(toAdd);
+            throw new DuplicateDataException("friend: " + friend);
+        }
         frs.add(friend);
+        toAdd.setFriends(frs);
+        this.categories.add(toAdd);
     }
 
     /**
@@ -145,12 +159,24 @@ public class Board <E extends DataElement> implements DataBoard<E> {
         DataValidator.validateCategory(category);
         DataValidator.validateUser(friend);
         this.checkPasswd(passw);
-        if(!this.friends.containsKey(category)) throw new DataNotFoundException("category: " + category);
-        HashSet<String> frs = this.friends.get(category);
+        Category<E> toRemove = null;
+        for(Category<E> c : this.categories) {
+            if(c.getCategory().equals(category)) {
+                toRemove = c;
+            }
+        }
+        if(toRemove == null) throw new DataNotFoundException("category: " + category);
+        this.categories.remove(toRemove);
+        HashSet<String> frs = toRemove.getFriends();
         // this should not happen
         if(frs == null) throw new NullPointerException();
-        if(!frs.contains(friend)) throw new DataNotFoundException("friend: " + friend);
+        if(!frs.contains(friend)) {
+            this.categories.add(toRemove);
+            throw new DataNotFoundException("friend: " + friend);
+        }
         frs.remove(friend);
+        toRemove.setFriends(frs);
+        this.categories.add(toRemove);
     }
 
     /**
@@ -170,17 +196,30 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     public boolean put(String passw, E dato, String category)
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException, DuplicateDataException {
         if(dato == null) throw new NullPointerException();
+        if(!dato.getAuthor().equals(this.getOwner())) throw new InvalidDataException("Author-Owner mismatch");
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
-        if(!this.contents.containsKey(category)) throw new DataNotFoundException("category: " + category);
-        TreeSet<E> cts = this.contents.get(category);
+        Category<E> toAdd = null;
+        for(Category<E> c : this.categories) {
+            System.out.println("I'm visiting category" + c.getCategory());
+            if(c.getCategory().equals(category)) {
+                toAdd = c;
+            }
+        }
+        if(toAdd == null) throw new DataNotFoundException("category: " + category);
+        this.categories.remove(toAdd);
+        TreeSet<E> cts = toAdd.getContents();
         // this should not happen
         if(cts == null) throw new NullPointerException();
-        if(!dato.getAuthor().equals(this.getOwner())) throw new InvalidDataException("Author-Owner mismatch");
         E cloned = (E)dato.clone();
         cloned.setCategory(category);
-        if(cts.contains(cloned)) throw new DuplicateDataException(cloned.display() + " in category " + category);
+        if(cts.contains(cloned)) {
+            this.categories.add(toAdd);
+            throw new DuplicateDataException(cloned.display() + " in category " + category);
+        }
         cts.add(cloned);
+        toAdd.setContents(cts);
+        this.categories.add(toAdd);
         return true;
     }
 
@@ -200,8 +239,8 @@ public class Board <E extends DataElement> implements DataBoard<E> {
         if(dato == null) throw new NullPointerException();
         this.checkPasswd(passw);
         E x = null;
-        for(TreeSet<E> t : this.contents.values()) {
-            if(t.contains(dato)) x = dato;
+        for(Category<E> c : this.categories) {
+            if(c.getContents().contains(dato)) x = dato;
         }
         if(x == null) throw new DataNotFoundException(dato.display());
         return x;
@@ -223,9 +262,12 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException {
         if(dato == null) throw new NullPointerException();
         this.checkPasswd(passw);
+        Category<E> toRemove = null;
         E x = null;
-        for(TreeSet<E> t : this.contents.values()) {
-            if(t.remove(dato)) x = dato;
+        for(Category<E> c : this.categories) {
+            if(c.getContents().remove(dato)) {
+                x = dato;
+            }
         }
         if(x == null) throw new DataNotFoundException(dato.display());
         return x;
@@ -245,8 +287,14 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DataNotFoundException, InvalidDataException, UnauthorizedLoginException {
         DataValidator.validateCategory(category);
         this.checkPasswd(passw);
-        if(!this.contents.containsKey(category)) throw new DataNotFoundException("category: " + category);
-        TreeSet<E> cts = this.contents.get(category);
+        Category<E> toReturn = null;
+        for(Category<E> c : this.categories) {
+            if(c.getCategory().equals(category)) {
+                toReturn = c;
+            }
+        }
+        if(toReturn == null) throw new DataNotFoundException("category: " + category);
+        TreeSet<E> cts = toReturn.getContents();
         // this should not happen
         if(cts == null) throw new NullPointerException();
         return new ArrayList<E>(cts);
@@ -267,20 +315,20 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws DuplicateDataException, InvalidDataException, DataNotFoundException {
         if(dato == null) throw new NullPointerException();
         E x = null;
-        for(String category : this.contents.keySet()) {
-            TreeSet<E> t = this.contents.get(category);
-            if(this.friends.get(category) == null) throw new NullPointerException("friends list in " + category);
-            if(this.friends.get(category).contains(friend)) {
-                if(t.contains(dato)) {
-                    t.remove(dato);
-                    x = (E) dato.clone();
-                    x.addLike(friend);
-                    System.out.println("Just added like by " + friend + " to " + x.display());
-                    t.add(x);
-                }
+        Category<E> updated = null;
+        for(Category<E> c : this.categories) {
+            TreeSet<E> t = c.getContents();
+            if(c.getFriends().contains(friend) && t.contains(dato)) {
+                updated = c;
+                t.remove(dato);
+                x = (E) dato.clone();
+                x.addLike(friend);
+                System.out.println("Just added like by " + friend + " to " + x.display());
+                t.add(x);
+                c.setContents(t);
             }
         }
-        if(x == null) throw new DataNotFoundException("post not found or @" + friend + " is not authorized to view it");
+        if(x == null || updated == null) throw new DataNotFoundException("post not found or @" + friend + " is not authorized to view it");
     }
 
     /**
@@ -296,8 +344,8 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws UnauthorizedLoginException, InvalidDataException {
         this.checkPasswd(passw);
         TreeSet <E> all = new TreeSet<E>();
-        for(TreeSet<E> t : this.contents.values()) {
-            for(E e : t) {
+        for(Category<E> c : this.categories) {
+            for(E e : c.getContents()) {
                 all.add(e);
             }
         }
@@ -318,14 +366,13 @@ public class Board <E extends DataElement> implements DataBoard<E> {
     throws InvalidDataException {
         DataValidator.validateUser(friend);
         ArrayList <E> all = new ArrayList<E>();
-        for(String cat : this.contents.keySet()) {
-            if(this.friends.get(cat).contains(friend)) {
-                for(E e : this.contents.get(cat)) {
+        for(Category<E> c : this.categories) {
+            if(c.getFriends().contains(friend)) {
+                for(E e : c.getContents()) {
                     all.add(e);
                 }
             }
         }
-
         List<E> unmodifiableAll = Collections.unmodifiableList(all);
         return unmodifiableAll.iterator();
     }
