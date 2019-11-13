@@ -274,7 +274,13 @@ public class Board <E extends DataElement> implements DataBoard<E> {
                 if(t.contains(dato)) {
                     t.remove(dato);
                     x = (E) dato.clone();
-                    x.addLike(friend);
+                    try {
+                        x.addLike(friend);
+
+                    } catch(Exception e) {
+                        t.add(x);
+                        throw e;
+                    }
                     System.out.println("Just added like by " + friend + " to " + x.display());
                     t.add(x);
                 }
